@@ -25,11 +25,7 @@ type AuthProviderProps = {
 export const AuthProvider = ({ children }: AuthProviderProps) => {
     const signup = useMutation({
         mutationFn: (user: User) => {
-            return axios.post(`${import.meta.env.VITE_SERVER_URL}/signup`, user, {
-                headers: {
-                    'Access-Control-Allow-Origin': '*'
-                }
-            })
+            return axios.post(`${import.meta.env.VITE_SERVER_URL}/signup`, user)
         },
     })
     return <Context.Provider value={{ signup }}>

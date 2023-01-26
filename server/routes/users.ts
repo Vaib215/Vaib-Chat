@@ -7,7 +7,7 @@ export const userRoutes = async (app:FastifyInstance) => {
     app.post<{Body: {id:string, name:string, image?:string}}>("/signup",async(req,res)=>{
         res.header("Access-Control-Allow-Origin", "*")
         const {id, name, image} = req.body
-        if(id || name || image){
+        if(id===null || name===null || id==="" || name===""){
             return res.status(400).send({
                 success: "false",
                 message: "Please enter the correct details"
@@ -22,5 +22,9 @@ export const userRoutes = async (app:FastifyInstance) => {
             })
         }
         await streamChat.upsertUser({id, name, image})
+        return res.status(200).send({
+            success: "true",
+            message: "User created successfully"
+        })
     })
 }
