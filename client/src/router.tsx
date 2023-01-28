@@ -1,5 +1,6 @@
 import { createBrowserRouter, Outlet } from "react-router-dom";
 import { AuthProvider } from "./context/AuthContext";
+import NewChannel from "./pages/channel/NewChannel";
 import { Home } from "./pages/Home";
 import { AuthLayout } from "./pages/layouts/AuthLayout";
 import RootLayout from "./pages/layouts/RootLayout";
@@ -8,14 +9,19 @@ import { Signup } from "./pages/Signup";
 
 export const router = createBrowserRouter([
   {
-    element: <ContextWrapper/>,
+    element: <ContextWrapper />,
     children: [
       {
         element: <RootLayout />,
         path: '/',
         children: [
-          {index:true, element: <Home/>},
-          { path: "channel", element: <></> },
+          { index: true, element: <Home /> },
+          {
+            path: "channel",
+            children: [
+              {path: "new", element: <NewChannel/>}
+            ]
+          },
         ],
       },
       {
@@ -29,6 +35,6 @@ export const router = createBrowserRouter([
   },
 ]);
 
-function ContextWrapper(){
-    return <AuthProvider><Outlet/></AuthProvider>
+function ContextWrapper() {
+  return <AuthProvider><Outlet /></AuthProvider>
 }

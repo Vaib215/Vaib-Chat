@@ -9,7 +9,8 @@ type AuthContext = {
     user?: User | null,
     streamChat?: StreamChat | undefined,
     signup: UseMutationResult<AxiosResponse, unknown, User>,
-    login: UseMutationResult<{ success: string, token: string, user: User }, unknown, { id: string, password: string }>
+    login: UseMutationResult<{ success: string, token: string, user: User }, unknown, { id: string, password: string }>,
+    logout: UseMutationResult<AxiosResponse, unknown, void>,
 }
 
 type User = {
@@ -26,7 +27,7 @@ export const useAuth = () => {
 }
 
 export const useLoggedInAuth = () => {
-    return useContext(Context) as AuthContext & Required<Pick<AuthContext,"user">>
+    return useContext(Context) as AuthContext & Required<Pick<AuthContext, "user">>
 }
 
 type AuthProviderProps = {
@@ -58,15 +59,26 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
             setToken(data.token)
         }
     })
+    const logout = useMutation({
+        mutationFn: () => {
+            return axios.post(`${import.meta.env.VITE_SERVER_URL}/logout`, token)
+        },
+        onSuccess() {
+            setUser(undefined)
+            setToken(undefined)
+            setStreamChat(undefined)
+        }
+    })
+
     useEffect(() => {
         if (user == null || token == null) return
         const chat = new StreamChat(import.meta.env.VITE_STREAM_API_KEY!)
 
-        if(chat.tokenManager.token === token  && chat.userID === user.id) return
+        if (chat.tokenManager.token === token && chat.userID === user.id) return
 
         let isInterrupted = false
-        const connectPromise = chat.connectUser(user,token).then(() => {
-            if(isInterrupted) return
+        const connectPromise = chat.connectUser(user, token).then(() => {
+            if (isInterrupted) return
             setStreamChat(chat)
         })
         return () => {
@@ -76,7 +88,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
         }
     }, [user, token])
 
-    return <Context.Provider value={{ signup, login, user, streamChat }}>
+    return <Context.Provider value={{ signup, login, user, streamChat, logout }}>
         {children}
     </Context.Provider>
 }

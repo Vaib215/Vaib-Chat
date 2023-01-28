@@ -19,8 +19,8 @@ export const Signup = () => {
     const name = nameRef.current?.value || ""
     const image = (imageRef.current?.files?.[0]);
     const password = passwordRef.current?.value || ""
-    const formData = new FormData();
     if (image) {
+      const formData = new FormData();
       formData.append('file', image);
       formData.append('public_id', "" + username)
       formData.append('upload_preset', 'user_profile');
@@ -29,13 +29,13 @@ export const Signup = () => {
       })
       .then((response)=>{
         setImageURL(response.data.secure_url)
-        if (username===null || name ===null || username.trim()==="" || name.trim()==="") {
-          return
-        }
-        signup.mutate({ id: username, name: name, image: imageURL, password })
       })
       .catch(err=>console.log(err))
     }
+    if (username===null || name ===null || username.trim()==="" || name.trim()==="") {
+      return
+    }
+    signup.mutate({ id: username, name: name, image: imageURL, password })
   }
   return (
     <form onSubmit={handleSubmit} className="w-full flex flex-col gap-4">

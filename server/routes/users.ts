@@ -3,6 +3,8 @@ import {StreamChat} from "stream-chat"
 
 const streamChat = StreamChat.getInstance(process.env.STREAM_API_KEY!,process.env.STREAM_API_SECRET!)
 
+const TOKEN_USERID_MAP = new Map<string, string>()
+
 export const userRoutes = async (app:FastifyInstance) => {
     app.post<{Body: {id:string, name:string, image?:string, password:string}}>("/signup",async(req,res)=>{
         res.header("Access-Control-Allow-Origin", "*")
@@ -55,6 +57,7 @@ export const userRoutes = async (app:FastifyInstance) => {
         }
 
         const token = streamChat.createToken(user.id)
+        TOKEN_USERID_MAP.set(token, user.id)
 
         return res.status(200).send({
             success: "true",
@@ -65,5 +68,24 @@ export const userRoutes = async (app:FastifyInstance) => {
                 image: user.image
             }
         })
+    })
+    app.post<{Body: {token: string}}>("/logout",async(req,res)=>{
+        const token = req.body.token
+        if(token==null || token==""){
+            return res.status(400).send({
+                success: "false",
+                message: "User already logged out"
+            })
+        }
+        
+        const id = TOKEN_USERID_MAP.get(token)
+        if(id==null){
+            return res.status(400).send({
+                success: "false",
+                message: "User already logged out"
+            })
+        }
+        await streamChat.revokeUserToken(id, new Date())
+        TOKEN_USERID_MAP.delete(token)
     })
 }
