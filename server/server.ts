@@ -8,7 +8,7 @@ const app = fastify()
 app.register(cors, {origin: '*'})
 app.register(userRoutes)
 
-app.listen({host: '0.0.0.0',port: 443},(err)=>{
+app.listen({host: '0.0.0.0',port: 3000},(err)=>{
     if(err) console.log(err);
     else console.log("Server running at :", 3000);
 })
