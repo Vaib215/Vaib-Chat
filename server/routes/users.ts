@@ -4,10 +4,10 @@ import {StreamChat} from "stream-chat"
 const streamChat = StreamChat.getInstance(process.env.STREAM_API_KEY!,process.env.STREAM_API_SECRET!)
 
 export const userRoutes = async (app:FastifyInstance) => {
-    app.post<{Body: {id:string, name:string, image?:string}}>("/signup",async(req,res)=>{
+    app.post<{Body: {id:string, name:string, image?:string, password:string}}>("/signup",async(req,res)=>{
         res.header("Access-Control-Allow-Origin", "*")
-        const {id, name, image} = req.body
-        if(id===null || name===null || id==="" || name===""){
+        const {id, name, image, password} = req.body
+        if(id===null || name===null || id==="" || name==="" || password===null || password===""){
             return res.status(400).send({
                 success: "false",
                 message: "Please enter the correct details"
@@ -21,10 +21,49 @@ export const userRoutes = async (app:FastifyInstance) => {
                 message: "Username is already taken"
             })
         }
-        await streamChat.upsertUser({id, name, image})
+        await streamChat.upsertUser({id, name, image, password})
         return res.status(200).send({
             success: "true",
             message: "User created successfully"
+        })
+    })
+    app.post<{Body: {id:string, password:string}}>("/login",async(req,res)=>{
+        res.header("Access-Control-Allow-Origin", "*")
+        const {id, password} = req.body
+        if(id===null || id==="" || password===null || password===""){
+            return res.status(400).send({
+                success: "false",
+                message: "Please enter the correct details"
+            })
+        }
+        
+        const {
+            users: [user]
+        } = await streamChat.queryUsers({id})
+        if(user==null){
+            return res.status(401).send({
+                success: "false",
+                message: "Invalid Credentials"
+            })
+        }
+
+        if(user.password!==password){
+            return res.status(401).send({
+                success: "false",
+                message: "Invalid Credentials"
+            })
+        }
+
+        const token = streamChat.createToken(user.id)
+
+        return res.status(200).send({
+            success: "true",
+            token,
+            user: {
+                id: user.id,
+                name: user.name,
+                image: user.image
+            }
         })
     })
 }

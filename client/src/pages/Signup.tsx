@@ -8,6 +8,7 @@ export const Signup = () => {
   const usernameRef = useRef<HTMLInputElement>(null);
   const nameRef = useRef<HTMLInputElement>(null);
   const imageRef = useRef<HTMLInputElement>(null);
+  const passwordRef = useRef<HTMLInputElement>(null);
   const [imageURL, setImageURL] = useState("")
 
   const handleSubmit = async (e: FormEvent) => {
@@ -17,6 +18,7 @@ export const Signup = () => {
     const username = usernameRef.current?.value || ""
     const name = nameRef.current?.value || ""
     const image = (imageRef.current?.files?.[0]);
+    const password = passwordRef.current?.value || ""
     const formData = new FormData();
     if (image) {
       formData.append('file', image);
@@ -30,7 +32,7 @@ export const Signup = () => {
         if (username===null || name ===null || username.trim()==="" || name.trim()==="") {
           return
         }
-        signup.mutate({ id: username, name: name, image: imageURL })
+        signup.mutate({ id: username, name: name, image: imageURL, password })
       })
       .catch(err=>console.log(err))
     }
@@ -67,6 +69,7 @@ export const Signup = () => {
         id="password"
         placeholder="Enter a strong password"
         type="password"
+        ref={passwordRef}
         pattern="\S*"
         required
       >

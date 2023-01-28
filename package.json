@@ -1,0 +1,22 @@
+{
+  "name": "vaib-chat",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "client": "cd client && npm run dev",
+    "server": "cd server && npm run dev",
+    "dev": "npm run client & npm run server"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Vaib215/Vaib-Chat.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Vaib215/Vaib-Chat/issues"
+  },
+  "homepage": "https://github.com/Vaib215/Vaib-Chat#readme"
+}
